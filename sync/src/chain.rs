@@ -394,7 +394,7 @@ impl ChainSync {
 		let expected_hash = self.peers.get(&peer_id).and_then(|p| p.asking_hash);
 		let expected_asking = if self.state == SyncState::ChainHead { PeerAsking::Heads } else { PeerAsking::BlockHeaders };
 		if !self.reset_peer_asking(peer_id, expected_asking) || expected_hash.is_none() {
-			trace!(target: "sync", "Ignored unexpected headers");
+			trace!(target: "sync", "{}: Ignored unexpected headers", peer_id);
 			self.continue_sync(io);
 			return Ok(());
 		}
@@ -873,7 +873,7 @@ impl ChainSync {
 			return;
 		}
 
-		if self.blocks.is_empty() {
+		if self.state == SyncState::Blocks && self.blocks.is_empty() {
 			// complete sync round
 			trace!(target: "sync", "Sync round complete");
 			self.restart(io);
